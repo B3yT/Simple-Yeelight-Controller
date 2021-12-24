@@ -11,7 +11,15 @@ class App(QtWidgets.QWidget):
         super().__init__()
         self.setWindowTitle('YeeControl')
         self.setup_ui()
-           
+        try:    
+                file =open ("lip.bin","rb")
+                self.imp_pass.setText(pickle.load(file))
+                file.close()
+                        
+        except OSError:
+                print ("error")
+        else:
+                print ("Successfully loaded")
         
     def setup_ui(self):
         self.create_Widgets()
@@ -20,7 +28,7 @@ class App(QtWidgets.QWidget):
         self.create_layouts()
         self.add_widgets_layouts()
         self.imp_pass.text()
-        self.imp_pass.setPlaceholderText("ip adress yeelight")
+        self.imp_pass.setPlaceholderText("yeelight ip adress")
         
     def create_Widgets(self):    
         self.btn_enc =QtWidgets.QPushButton("save")
@@ -89,9 +97,9 @@ class App(QtWidgets.QWidget):
             pickle.dump(self.imp_pass.text(),file)
             file.close()
         except OSError:
-                print ("erreur!")
+                print ("error!")
         else:
-                print ("Successfully") 
+                print ("Successfully saved") 
     
     def bouton_load_clic(self):
         try:    
@@ -101,9 +109,9 @@ class App(QtWidgets.QWidget):
             file.close()
               
         except OSError:
-                        print ("fichier vide")
+                        print ("error")
         else:
-                        print ("Successfully created the directory")
+                        print ("Successfully loaded")
         
     def interupteur_btn(self):
         
