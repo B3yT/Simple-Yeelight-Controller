@@ -2,7 +2,8 @@ from PySide2 import QtWidgets
 from yeelight import Bulb
 from yeelight import *
 import pickle
-
+from PySide2.QtGui import *
+from PySide2.QtWidgets import *
 
 
 
@@ -11,6 +12,7 @@ class App(QtWidgets.QWidget):
         super().__init__()
         self.setWindowTitle('YeeControl')
         self.setup_ui()
+        
         try:    
                 file =open ("lip.bin","rb")
                 self.imp_pass.setText(pickle.load(file))
@@ -20,7 +22,9 @@ class App(QtWidgets.QWidget):
                 print ("error")
         else:
                 print ("Successfully loaded")
-        
+
+
+    
     def setup_ui(self):
         self.create_Widgets()
         self.setup_css()
@@ -30,7 +34,9 @@ class App(QtWidgets.QWidget):
         self.imp_pass.text()
         self.imp_pass.setPlaceholderText("yeelight ip adress")
         
+        
     def create_Widgets(self):    
+        self.__label = QLabel(self)
         self.btn_enc =QtWidgets.QPushButton("save")
         self.btn_load =QtWidgets.QPushButton("load")
         self.imp_pass =QtWidgets.QLineEdit()
@@ -38,35 +44,37 @@ class App(QtWidgets.QWidget):
         self.min_btn = QtWidgets.QPushButton("Minimum")
         self.moy_btn = QtWidgets.QPushButton("Middle")
         self.max_btn = QtWidgets.QPushButton("Maximum")
-        
         self.blue_btn = QtWidgets.QPushButton("Blue")
         self.green_btn = QtWidgets.QPushButton("green")
         self.red_btn = QtWidgets.QPushButton("red")
         self.pink_btn = QtWidgets.QPushButton("pink")
         self.white_btn = QtWidgets.QPushButton("white")
         self.yellow_btn = QtWidgets.QPushButton("yellow")
-       
+        self.__slider = QSlider( Qt.Horizontal, self )
+        
+        
+
     
     def create_layouts(self):
         self.main_layout = QtWidgets.QGridLayout(self)    
         
         
     def  add_widgets_layouts(self):    
+        self.main_layout.addWidget(self.__label,0,1,2,2)
+        self.main_layout.addWidget(self.__slider,0,0,1,3)
+        self.main_layout.addWidget(self.btn_enc,1,0)
+        self.main_layout.addWidget(self.btn_load,1,2)
+        self.main_layout.addWidget(self.imp_pass,1,1)
+        self.main_layout.addWidget(self.int_btn,2,1)
         
-        self.main_layout.addWidget(self.btn_enc)
-        self.main_layout.addWidget(self.btn_load)
-        self.main_layout.addWidget(self.imp_pass)
-        self.main_layout.addWidget(self.int_btn)
-        self.main_layout.addWidget(self.min_btn)
-        self.main_layout.addWidget(self.moy_btn)
-        self.main_layout.addWidget(self.max_btn)
-        
+        self.main_layout.addWidget(self.yellow_btn)
+        self.main_layout.addWidget(self.white_btn,2,0)
         self.main_layout.addWidget(self.blue_btn)
         self.main_layout.addWidget(self.green_btn)
         self.main_layout.addWidget(self.red_btn)
-        self.main_layout.addWidget(self.yellow_btn)
-        self.main_layout.addWidget(self.white_btn)
-        self.main_layout.addWidget(self.pink_btn)
+        self.main_layout.addWidget(self.pink_btn,5,1)
+        
+    
     
     def setup_css(self):
         self.setStyleSheet( """
@@ -80,17 +88,20 @@ class App(QtWidgets.QWidget):
        self.btn_enc.clicked.connect(self.bouton_enc_clic)
        self.btn_load.clicked.connect(self.bouton_load_clic)
        self.int_btn.clicked.connect(self.interupteur_btn)
-       self.min_btn.clicked.connect(self.minimum_btn)
-       self.moy_btn.clicked.connect(self.moyen_btn)
-       self.max_btn.clicked.connect(self.maximum_btn)
-       
+       self.yellow_btn.clicked.connect(self.jaune_btn)
+       self.white_btn.clicked.connect(self.blanc_btn)
+       self.__slider.valueChanged.connect(self.valueChanged)
        self.blue_btn.clicked.connect(self.bleu_btn)
        self.green_btn.clicked.connect(self.vert_btn)
        self.red_btn.clicked.connect(self.rouge_btn)
        self.pink_btn.clicked.connect(self.rose_btn)
-       self.yellow_btn.clicked.connect(self.jaune_btn)
-       self.white_btn.clicked.connect(self.blanc_btn)
-
+       
+    
+    
+    
+    def resetValue(self):
+        self.__slider.setValue(0)   
+    
     def bouton_enc_clic(self):
         try:
             file=open ("lip.bin","wb")
@@ -113,20 +124,14 @@ class App(QtWidgets.QWidget):
         else:
                         print ("Successfully loaded")
         
+    def valueChanged( self, value ):
+        self.__label.setText(str(value))
+        bulb = Bulb(self.imp_pass.text())
+        bulb.set_brightness(value)
+    
     def interupteur_btn(self):
-        
         bulb = Bulb(self.imp_pass.text())
         bulb.toggle()
-        
-    def maximum_btn(self):
-        bulb = Bulb(self.imp_pass.text())
-        bulb.set_brightness(100)
-    def moyen_btn(self):
-        bulb = Bulb(self.imp_pass.text())
-        bulb.set_brightness(50)
-    def minimum_btn(self):
-        bulb = Bulb(self.imp_pass.text())
-        bulb.set_brightness(1)
         
     def bleu_btn(self):
         bulb = Bulb(self.imp_pass.text())
